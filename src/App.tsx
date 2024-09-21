@@ -1,15 +1,12 @@
+import { BrowserRouter } from "react-router-dom";
 import "./App.css";
-// import LoginForm from "./components/authentication/LoginForm";
-import Header from "./components/layout/Header/Header";
-import Home from "./page/customer/home/Homepage";
+import AppRouter from "./routers";
 
 function App() {
   return (
-    <>
-      <Header />
-      <Home />
-      {/* <LoginForm /> */}
-    </>
+    <BrowserRouter>
+      <AppRouter />
+    </BrowserRouter>
   );
 }
 

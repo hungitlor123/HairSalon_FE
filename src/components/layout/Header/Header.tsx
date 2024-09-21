@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Header = () => {
   return (
     <header>
@@ -87,14 +89,14 @@ const Header = () => {
             </div>
 
             <div className="mt-12 lg:mt-0">
-              <a
-                href="#"
+              <Link
+                to="/login"
                 className="relative flex h-9 w-full items-center justify-center px-4 before:absolute before:inset-0 before:rounded-full before:bg-yellow-600 before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-max"
               >
                 <span className="relative text-sm font-semibold text-white">
                   Login
                 </span>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
