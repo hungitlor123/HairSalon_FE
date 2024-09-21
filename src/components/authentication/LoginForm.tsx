@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const LoginForm: React.FC = () => {
     const [email, setEmail] = useState<string>('');
@@ -112,9 +113,9 @@ const LoginForm: React.FC = () => {
                         </a>
                     </p>
                     <p>
-                        <a href="/dashboard/signin/signup" className="font-medium text-zinc-950 dark:text-white text-sm">
+                        <Link to="/register" className="font-medium text-zinc-950 dark:text-white text-sm">
                             Don't have an account? Sign up
-                        </a>
+                        </Link>
                     </p>
                 </div>
             </div>
