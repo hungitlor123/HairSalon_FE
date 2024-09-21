@@ -16,7 +16,7 @@ const Header = () => {
               aria-label="logo"
               className="flex items-center space-x-2"
             >
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">
+              <span className="text-2xl font-bold text-white dark:text-white">
                 HairCare
               </span>
             </a>
@@ -49,7 +49,7 @@ const Header = () => {
           ></div>
 
           <div className="invisible absolute left-0 top-full z-20 w-full origin-top translate-y-1 scale-95 flex-col flex-wrap justify-end gap-6 rounded-3xl border border-gray-100 bg-white p-8 opacity-0 shadow-2xl shadow-gray-600/10 transition-all duration-300 peer-checked:visible peer-checked:scale-100 peer-checked:opacity-100 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none lg:visible lg:relative lg:flex lg:w-7/12 lg:translate-y-0 lg:scale-100 lg:flex-row lg:items-center lg:gap-0 lg:border-none lg:bg-transparent lg:p-0 lg:opacity-100 lg:shadow-none lg:peer-checked:translate-y-0">
-            <div className="w-full text-black dark:text-gray-300 lg:w-auto lg:pr-4 lg:pt-0">
+            <div className="w-full text-white dark:text-gray-300 lg:w-auto lg:pr-4 lg:pt-0">
               <ul className="flex flex-col gap-6 font-medium tracking-wide lg:flex-row lg:gap-0 lg:text-sm">
                 <li>
                   <a
@@ -89,7 +89,7 @@ const Header = () => {
             <div className="mt-12 lg:mt-0">
               <a
                 href="#"
-                className="relative flex h-9 w-full items-center justify-center px-4 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-max"
+                className="relative flex h-9 w-full items-center justify-center px-4 before:absolute before:inset-0 before:rounded-full before:bg-yellow-600 before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-max"
               >
                 <span className="relative text-sm font-semibold text-white">
                   Login
