@@ -47,7 +47,6 @@ jobs:
 
       - name: "Deploy to Azure Web App"
         uses: azure/webapps-deploy@v3
-        if: ${{inputs.goToPRO == 'true'}}
         id: deploy-to-webapp
         with:
           app-name: "hair-salon-vjp"
