@@ -47,9 +47,10 @@ jobs:
 
       - name: "Deploy to Azure Web App"
         uses: azure/webapps-deploy@v3
+        if: ${{inputs.goToPRO == 'true'}}
         id: deploy-to-webapp
         with:
           app-name: "hair-salon-vjp"
           slot-name: "Production"
-          package: .
+          package: ./dist
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B53B7136B76548C39B3CCC517F9DA2FC }}
