@@ -1,11 +1,11 @@
 import { IAccount } from "@/interfaces/Account";
-import { LOGIN_ENDPOINT } from "@/services/constant/apiConfig";
+import { LOGIN_ENDPOINT, REGISTER_ENDPOINT } from "@/services/constant/apiConfig";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 type AuthState = {
-    auth : IAccount | null;
+    auth: IAccount | null;
     loading: boolean;
     error: string | unknown;
     success: boolean;
@@ -15,8 +15,27 @@ const initialState: AuthState = {
     auth: null,
     loading: false,
     error: null,
-    success: false, 
+    success: false,
 };
+
+export const registerAcount = createAsyncThunk<IAccount | Object>(
+    "auth/register",
+    async (data, thunkAPI) => {
+        try {
+            const response = await axios.post(REGISTER_ENDPOINT, data);
+            if (response.data.success === false) {
+                toast.error(response.data.errMessage);
+            }
+            if (response.data.success === true) {
+                toast.success(response.data.errMessage);
+            }
+            return response.data;
+        } catch (error: any) {
+            toast.error("Server Error");
+            return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
+        }
+    }
+)
 
 export const loginAccount = createAsyncThunk<IAccount, string | Object>(
     'auth/login',
@@ -27,10 +46,10 @@ export const loginAccount = createAsyncThunk<IAccount, string | Object>(
             const refreshToken = response.data.refreshToken;
             sessionStorage.setItem('hairSalonToken', token);
             sessionStorage.setItem('hairSalonRefreshToken', refreshToken);
-            if (response.data.success === false) { 
+            if (response.data.success === false) {
                 toast.error(response.data.errMessage);
             }
-            if (response.data.success === true) { 
+            if (response.data.success === true) {
                 toast.success(response.data.errMessage);
             }
 
@@ -48,6 +67,34 @@ export const authSlice = createSlice({
         setError: (state, action: PayloadAction<string[] | unknown>) => {
             state.error = action.payload;
         },
+    },
+    extraReducers: (builder) => {
+        builder
+            // Register
+            .addCase(registerAcount.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(registerAcount.fulfilled, (state) => {
+                state.loading = false;
+                state.success = true;
+            })
+            .addCase(registerAcount.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // Log in
+            .addCase(loginAccount.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(loginAccount.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = true;
+                state.auth = action.payload;
+            })
+            .addCase(loginAccount.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
     },
 });
 
