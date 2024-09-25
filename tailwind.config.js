@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
-        "hero-pattern": "url('./src/assets/bg-2.jpg')",
+        "hero-pattern": "url('/bg-2.jpg')",
       },
       borderRadius: {
         lg: "var(--radius)",
