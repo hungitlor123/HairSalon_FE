@@ -37,7 +37,7 @@ const Profile = () => {
         }
     };
 
-    const handleSaveChanges = () => {
+        const handleSaveChanges = () => {
         const today = new Date();
         const selectedDate = profile.birthday;
         const age = today.getFullYear() - selectedDate.getFullYear();
