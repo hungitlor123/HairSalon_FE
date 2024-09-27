@@ -3,6 +3,8 @@ import { useAppDispatch } from '@/services/store/store';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
 type FormValue = {
     firstName: string;
     lastName: string;
@@ -10,9 +12,10 @@ type FormValue = {
     password: string;
     confirmPassword: string;
 }
+
 const RegisterForm: React.FC = () => {
-    const navigate = useNavigate()
-    const dispatch = useAppDispatch()
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const form = useForm<FormValue>({
         defaultValues: {
@@ -22,43 +25,50 @@ const RegisterForm: React.FC = () => {
             password: '',
             confirmPassword: ''
         }
-    })
+    });
 
-    const { register, handleSubmit, formState } = form;
+    const { register, handleSubmit, formState, watch } = form;
     const { errors } = formState;
-    // const [showPassword, setShowPassword] = useState(false)
-    // const handleShowPass = () => {
-    //     setShowPassword(!showPassword);
-    // }
 
-    // const [showConfirmPass, setShowConfirmPass] = useState(false)
-    // const handleShowConfirmPass = () => {
-    //     setShowConfirmPass(!showConfirmPass)
-    // }
+    // State to toggle password visibility
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPass, setShowConfirmPass] = useState(false);
+
+    // Handlers for toggling password visibility
+    const handleShowPass = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleShowConfirmPass = () => {
+        setShowConfirmPass(!showConfirmPass);
+    };
 
     const onSubmit = (data: FormValue) => {
         dispatch(registerAcount(data))
             .unwrap()
             .then(() => {
-                navigate('/login');
+                navigate('/register');
             })
             .catch((error) => {
                 console.error('Registration failed:', error);
             });
-    }
+    };
+
+    const validateConfirmPassword = (value: string) => {
+        const password = watch('password');
+        return password === value || "Passwords do not match";
+    };
+
     useEffect(() => {
         return () => {
-            form.reset()
-            dispatch(setError(null))
-        }
-    })
+            form.reset();
+            dispatch(setError(null));
+        };
+    }, [dispatch, form]);
+
     return (
         <>
-
-            <form onSubmit={handleSubmit(onSubmit)}
-                noValidate
-                className="mb-4"
-            >
+            <form onSubmit={handleSubmit(onSubmit)} noValidate className="mb-4">
                 <div className="grid gap-2">
                     <div className="grid gap-1">
                         <label className="text-white" htmlFor="firstName">
@@ -70,9 +80,8 @@ const RegisterForm: React.FC = () => {
                             placeholder="John"
                             type="text"
                             {...register("firstName", { required: "Enter your first name" })}
-                            required
                         />
-                        {errors.firstName && <p className='text-sm text-red-500'>* {errors.firstName.message}</p>}
+                        {errors.firstName && <p className="text-sm text-red-500">* {errors.firstName.message}</p>}
 
                         <label className="text-white" htmlFor="lastName">
                             Last Name
@@ -83,49 +92,62 @@ const RegisterForm: React.FC = () => {
                             placeholder="Doe"
                             type="text"
                             {...register("lastName", { required: "Enter your last name" })}
-                            required
                         />
-                        {errors.lastName && <p className='text-sm text-red-500'>* {errors.lastName.message}</p>}
+                        {errors.lastName && <p className="text-sm text-red-500">* {errors.lastName.message}</p>}
 
                         <label className="text-white" htmlFor="email">
                             Email
                         </label>
                         <input
                             className="mr-2.5 mb-2 h-full min-h-[44px] w-full rounded-lg border border-zinc-700 bg-gray-800 px-4 py-3 text-sm font-medium text-white placeholder:text-zinc-400 focus:outline-0"
-                            id='email'
+                            id="email"
                             placeholder="name@example.com"
                             type="email"
-                            autoCapitalize="none"
-                            autoComplete="email"
-                            autoCorrect="off"
-                            {...register("email", { required: "Enter your email address" })}
-                            required
+                            {...register("email", { required: "Enter your email address", pattern: { value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: "Invalid email address" } })}
                         />
-                        {errors.email && <p className='text-sm text-red-500'>* {errors.email.message}</p>}
+                        {errors.email && <p className="text-sm text-red-500">* {errors.email.message}</p>}
+
+                        {/* Password Field */}
                         <label className="text-white" htmlFor="password">
                             Password
                         </label>
-                        <input
-                            id="password"
-                            placeholder="Password"
-                            type="password"
-                            className="mr-2.5 mb-2 h-full min-h-[44px] w-full rounded-lg border border-zinc-700 bg-gray-800 px-4 py-3 text-sm font-medium text-white placeholder:text-zinc-400 focus:outline-0"
-                            {...register("password", { required: "Enter your password" })}
-                            required
-                        />
-                        {errors.password && <p className='text-sm text-red-500'>* {errors.password.message}</p>}
+                        <div className="relative">
+                            <input
+                                id="password"
+                                placeholder="Password"
+                                type={showPassword ? "text" : "password"}
+                                className="mr-2.5 mb-2 h-full min-h-[44px] w-full rounded-lg border border-zinc-700 bg-gray-800 px-4 py-3 text-sm font-medium text-white placeholder:text-zinc-400 focus:outline-0"
+                                {...register("password", { required: "Enter your password", minLength: { value: 6, message: "Password must be at least 6 characters long" } })}
+                            />
+                            <div
+                                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white cursor-pointer text-lg"
+                                onClick={handleShowPass}
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </div>
+                        </div>
+                        {errors.password && <p className="text-sm text-red-500">* {errors.password.message}</p>}
+
+                        {/* Confirm Password Field */}
                         <label className="text-white" htmlFor="confirmPassword">
                             Confirm Password
                         </label>
-                        <input
-                            id="confirmPassword"
-                            placeholder="Confirm Password"
-                            type="password"
-                            className="mr-2.5 mb-2 h-full min-h-[44px] w-full rounded-lg border border-zinc-700 bg-gray-800 px-4 py-3 text-sm font-medium text-white placeholder:text-zinc-400 focus:outline-0"
-                            {...register("confirmPassword", { required: "Confirm your password" })}
-                            required
-                        />
-                        {errors.confirmPassword && <p className='text-sm text-red-500'>* {errors.confirmPassword.message}</p>}
+                        <div className="relative">
+                            <input
+                                id="confirmPassword"
+                                placeholder="Confirm Password"
+                                type={showConfirmPass ? "text" : "password"}
+                                className="mr-2.5 mb-2 h-full min-h-[44px] w-full rounded-lg border border-zinc-700 bg-gray-800 px-4 py-3 text-sm font-medium text-white placeholder:text-zinc-400 focus:outline-0"
+                                {...register("confirmPassword", { required: "Confirm your password", validate: validateConfirmPassword })}
+                            />
+                            <div
+                                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white cursor-pointer text-lg"
+                                onClick={handleShowConfirmPass}
+                            >
+                                {showConfirmPass ? <FaEyeSlash /> : <FaEye />}
+                            </div>
+                        </div>
+                        {errors.confirmPassword && <p className="text-sm text-red-500">* {errors.confirmPassword.message}</p>}
                     </div>
                     <button
                         className="whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-yellow-600 text-white hover:bg-yellow-500 mt-2 flex h-[unset] w-full items-center justify-center rounded-lg px-4 py-4 text-sm font-medium"
