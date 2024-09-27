@@ -15,22 +15,25 @@ const AppRouter = () => {
                 <>
                     <Route path='/login' element={<LoginPage />} />
                     <Route path='/register' element={<RegisterPage />} />
-                    <Route path='/forgot_password' element={<ForgotPassWordPage />} />
+                    <Route path='/profile' element={<Profile />} />
+                        <Route path='/forgot_password' element={<ForgotPassWordPage />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
-                    <Route path='/' element={<Home />} />
+                            <Route path='/' element={<Home />} />
                 </>
             ) : (
                 <>
-                    <Route path='/profile' element={<Profile />} />
+
                     {isCustomer && (
+                        
                         <>
-                            <Route path='/' element={<Home />} />
+                        <Route path='/' element={<Home />} />
+
                         </>
                     )}
                 </>
             )}
 
-        </Routes>
+            </Routes>
     )
 }
 export default AppRouter

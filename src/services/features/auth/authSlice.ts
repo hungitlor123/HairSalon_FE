@@ -9,6 +9,7 @@ type AuthState = {
     loading: boolean;
     error: string | unknown;
     success: boolean;
+    errMessage: string;
 };
 
 const initialState: AuthState = {
@@ -16,6 +17,7 @@ const initialState: AuthState = {
     loading: false,
     error: null,
     success: false,
+    errMessage: "",
 };
 
 export const registerAcount = createAsyncThunk<IAccount, IRegister>(
@@ -25,9 +27,12 @@ export const registerAcount = createAsyncThunk<IAccount, IRegister>(
             const response = await axios.post(REGISTER_ENDPOINT, data);
             if (response.data.errCode === 0) {
                 toast.success("Register success");
-            } else {
-                toast.error("Register failed");
+            } 
+            //doi backend tra success = boolean
+            if (response.data.errCode !== 0) {
+                toast.error(response.data.errMessage);
             }
+            
             return response.data;
         } catch (error: any) {
             toast.error("Server Error");
