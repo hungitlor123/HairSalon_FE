@@ -6,6 +6,7 @@ import ForgotPassWordPage from '@/page/auth/ForgotPassWord/ForgotPassWordPage'
 import Profile from '@/page/customer/home/Profilepage'
 const AppRouter = () => {
     const token = sessionStorage.getItem("hairSalon")
+    
     return (
         <Routes>
             {token === null ? (
