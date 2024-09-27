@@ -9,7 +9,7 @@ type AuthState = {
     loading: boolean;
     error: string | unknown;
     success: boolean;
-}
+};
 
 const initialState: AuthState = {
     auth: null,
@@ -18,16 +18,23 @@ const initialState: AuthState = {
     success: false,
 };
 
-export const registerAcount = createAsyncThunk<IAccount | Object>(
+interface FormValue {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+}
+
+export const registerAcount = createAsyncThunk<IAccount | Object, FormValue>(
     "auth/register",
-    async (data, thunkAPI) => {
+    async (data: FormValue, thunkAPI) => {
         try {
             const response = await axios.post(REGISTER_ENDPOINT, data);
-            if (response.data.success === false) {
-                toast.error(response.data.errMessage);
-            }
-            if (response.data.success === true) {
-                toast.success(response.data.errMessage);
+            if (response.data.errCode === 0) {
+                toast.success("Register success");
+            } else {
+                toast.error("Register failed");
             }
             return response.data;
         } catch (error: any) {
@@ -35,7 +42,8 @@ export const registerAcount = createAsyncThunk<IAccount | Object>(
             return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
         }
     }
-)
+);
+
 
 export const loginAccount = createAsyncThunk<IAccount, string | Object>(
     'auth/login',
@@ -46,10 +54,10 @@ export const loginAccount = createAsyncThunk<IAccount, string | Object>(
             const refreshToken = response.data.refreshToken;
             sessionStorage.setItem('hairSalonToken', token);
             sessionStorage.setItem('hairSalonRefreshToken', refreshToken);
-            if (response.data.success === false) {
+            if (response.data.success === false) { 
                 toast.error(response.data.errMessage);
             }
-            if (response.data.success === true) {
+            if (response.data.success === true) { 
                 toast.success(response.data.errMessage);
             }
 
@@ -60,6 +68,8 @@ export const loginAccount = createAsyncThunk<IAccount, string | Object>(
         }
     }
 );
+
+// Thêm action để logout
 export const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -67,36 +77,47 @@ export const authSlice = createSlice({
         setError: (state, action: PayloadAction<string[] | unknown>) => {
             state.error = action.payload;
         },
+        logoutUser: (state) => {
+            // Xóa thông tin đăng nhập khỏi sessionStorage
+            sessionStorage.removeItem('hairSalonToken');
+            sessionStorage.removeItem('hairSalonRefreshToken');
+            sessionStorage.removeItem('user'); // nếu bạn lưu thông tin user ở đây
+
+            // Reset lại trạng thái auth
+            state.auth = null;
+            state.success = false;
+            toast.success("Logout successful");
+        },
     },
     extraReducers: (builder) => {
         builder
-            // Register
-            .addCase(registerAcount.pending, (state) => {
-                state.loading = true;
-            })
-            .addCase(registerAcount.fulfilled, (state) => {
-                state.loading = false;
-                state.success = true;
-            })
-            .addCase(registerAcount.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            // Log in
-            .addCase(loginAccount.pending, (state) => {
-                state.loading = true;
-            })
-            .addCase(loginAccount.fulfilled, (state, action) => {
-                state.loading = false;
-                state.success = true;
-                state.auth = action.payload;
-            })
-            .addCase(loginAccount.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            });
+        // Register
+        .addCase(registerAcount.pending, (state) => {
+            state.loading = true;
+        })
+        .addCase(registerAcount.fulfilled, (state) => {
+            state.loading = false;
+            state.success = true;
+        })
+        .addCase(registerAcount.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+        .addCase(loginAccount.pending, (state) => {
+            state.loading = true;
+        })
+        .addCase(loginAccount.fulfilled, (state, action) => {
+            state.loading = false;
+            state.success = true;
+            state.auth = action.payload;
+        })
+        .addCase(loginAccount.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        });
     },
 });
 
-export const { setError } = authSlice.actions;
+// Export hành động logout để sử dụng
+export const { setError, logoutUser } = authSlice.actions;
 export default authSlice.reducer;
