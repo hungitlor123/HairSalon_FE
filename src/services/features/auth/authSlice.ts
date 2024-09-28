@@ -2,7 +2,6 @@ import { IAccount, IRegister } from "@/interfaces/Account";
 import { LOGIN_ENDPOINT, REFRESH_TOKEN_ENDPOINT, REGISTER_ENDPOINT } from "@/services/constant/apiConfig";
 import axiosInstance from "@/services/constant/axiosInstance";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
 import { toast } from "react-toastify";
 
 type AuthState = {
@@ -25,7 +24,7 @@ export const registerAcount = createAsyncThunk<IAccount, IRegister>(
     "auth/register",
     async (data, thunkAPI) => {
         try {
-            const response = await axios.post(REGISTER_ENDPOINT, data);
+            const response = await axiosInstance.post(REGISTER_ENDPOINT, data);
             if (response.data.errCode === 0) {
                 toast.success("Register success");
             }
@@ -47,7 +46,7 @@ export const loginAccount = createAsyncThunk<IAccount, string | Object>(
     'auth/login',
     async (data, thunkAPI) => {
         try {
-            const response = await axios.post(LOGIN_ENDPOINT, data);
+            const response = await axiosInstance.post(LOGIN_ENDPOINT, data);
             const token = response.data.accessToken;
             const refreshToken = response.data.refreshToken;
             sessionStorage.setItem('hairSalonToken', token);
@@ -143,6 +142,11 @@ export const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             });
+        builder.addCase(refreshAccessToken.fulfilled, (state, action: PayloadAction<string>) => {
+            if (state.auth) {
+                state.auth.accessToken = action.payload;
+            }
+        });
     },
 });
 

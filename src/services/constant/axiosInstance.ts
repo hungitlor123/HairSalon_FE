@@ -1,9 +1,12 @@
 import axios from 'axios';
-import { store } from './../store/store';
 import { BASE_URL } from './apiConfig';
 import { toast } from 'react-toastify';
-import { logoutUser, refreshAccessToken } from '../features/auth/authSlice';
+// Import store and actions only when needed
+let store: any;
+let refreshAccessToken: any;
+let logoutUser: any;
 
+// Initialize axios instance
 const axiosInstance = axios.create({
     baseURL: BASE_URL
 });
@@ -23,6 +26,16 @@ axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
+
+        // Dynamically import store and actions
+        if (!store) {
+            const { store: importedStore } = await import('../store/store');
+            const { refreshAccessToken: importedRefreshAccessToken, logoutUser: importedLogoutUser } = await import('../features/auth/authSlice');
+            store = importedStore;
+            refreshAccessToken = importedRefreshAccessToken;
+            logoutUser = importedLogoutUser;
+        }
+
         if (error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             try {
