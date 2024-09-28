@@ -1,5 +1,6 @@
 import { IAccount, IRegister } from "@/interfaces/Account";
-import { LOGIN_ENDPOINT, REGISTER_ENDPOINT } from "@/services/constant/apiConfig";
+import { LOGIN_ENDPOINT, REFRESH_TOKEN_ENDPOINT, REGISTER_ENDPOINT } from "@/services/constant/apiConfig";
+import axiosInstance from "@/services/constant/axiosInstance";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -27,12 +28,12 @@ export const registerAcount = createAsyncThunk<IAccount, IRegister>(
             const response = await axios.post(REGISTER_ENDPOINT, data);
             if (response.data.errCode === 0) {
                 toast.success("Register success");
-            } 
+            }
             //doi backend tra success = boolean
             if (response.data.errCode !== 0) {
                 toast.error(response.data.errMessage);
             }
-            
+
             return response.data;
         } catch (error: any) {
             toast.error("Server Error");
@@ -51,10 +52,10 @@ export const loginAccount = createAsyncThunk<IAccount, string | Object>(
             const refreshToken = response.data.refreshToken;
             sessionStorage.setItem('hairSalonToken', token);
             sessionStorage.setItem('hairSalonRefreshToken', refreshToken);
-            if (response.data.success === false) { 
+            if (response.data.success === false) {
                 toast.error(response.data.errMessage);
             }
-            if (response.data.success === true) { 
+            if (response.data.success === true) {
                 toast.success(response.data.errMessage);
             }
 
@@ -65,6 +66,35 @@ export const loginAccount = createAsyncThunk<IAccount, string | Object>(
         }
     }
 );
+
+export const refreshAccessToken = createAsyncThunk<string, void>(
+    'auth/refreshAccessToken',
+    async (_, thunkAPI) => {
+        try {
+            const token = sessionStorage.getItem('hairSalonToken');
+            const refreshToken = sessionStorage.getItem('hairSalonRefreshToken');
+
+            if (!refreshToken) {
+                throw new Error('No refresh token available');
+            }
+
+            const response = await axiosInstance.post(REFRESH_TOKEN_ENDPOINT, {
+                accessToken: token,
+                refreshToken: refreshToken,
+            });
+
+            if (response.data.success) {
+                sessionStorage.setItem('hairSalonToken', response.data.accessToken);
+                sessionStorage.setItem('hairSalonRefreshToken', response.data.refreshToken);
+                return response.data.accessToken;
+            }
+        } catch (error: any) {
+            thunkAPI.dispatch(logoutUser());
+            throw error;
+        }
+    }
+);
+
 
 // Thêm action để logout
 export const authSlice = createSlice({
@@ -88,31 +118,31 @@ export const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-        // Register
-        .addCase(registerAcount.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(registerAcount.fulfilled, (state, action) => {
-            state.loading = false;
-            state.auth = action.payload;
-            state.success = true;
-        })
-        .addCase(registerAcount.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload;
-        })
-        .addCase(loginAccount.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(loginAccount.fulfilled, (state, action) => {
-            state.loading = false;
-            state.success = true;
-            state.auth = action.payload;
-        })
-        .addCase(loginAccount.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload;
-        });
+            // Register
+            .addCase(registerAcount.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(registerAcount.fulfilled, (state, action) => {
+                state.loading = false;
+                state.auth = action.payload;
+                state.success = true;
+            })
+            .addCase(registerAcount.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(loginAccount.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(loginAccount.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = true;
+                state.auth = action.payload;
+            })
+            .addCase(loginAccount.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
     },
 });
 

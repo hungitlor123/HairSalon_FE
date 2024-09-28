@@ -6,7 +6,7 @@ import ForgotPassWordPage from '@/page/auth/ForgotPassWord/ForgotPassWordPage'
 import Profile from '@/page/customer/home/Profilepage'
 import { useAppSelector } from '@/services/store/store'
 const AppRouter = () => {
-    const token = sessionStorage.getItem("hairSalon");
+    const token = sessionStorage.getItem("hairSalonToken");
     const { auth } = useAppSelector((state) => state.auth);
     const isCustomer = auth?.roleId === "R4"
     return (
@@ -15,25 +15,24 @@ const AppRouter = () => {
                 <>
                     <Route path='/login' element={<LoginPage />} />
                     <Route path='/register' element={<RegisterPage />} />
-                    <Route path='/profile' element={<Profile />} />
-                        <Route path='/forgot_password' element={<ForgotPassWordPage />} />
+                    <Route path='/forgot_password' element={<ForgotPassWordPage />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
-                            <Route path='/' element={<Home />} />
+                    <Route path='/' element={<Home />} />
                 </>
             ) : (
                 <>
-
+                    <Route path='/profile' element={<Profile />} />
                     {isCustomer && (
-                        
+
                         <>
-                        <Route path='/' element={<Home />} />
+                            <Route path='/' element={<Home />} />
 
                         </>
                     )}
                 </>
             )}
 
-            </Routes>
+        </Routes>
     )
 }
 export default AppRouter
