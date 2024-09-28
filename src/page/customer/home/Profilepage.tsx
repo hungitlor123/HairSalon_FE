@@ -1,29 +1,20 @@
 import React, { useState } from "react";
 import Header from "@/components/layout/Header/Header";
-import DatePicker from "react-datepicker";
+// import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format } from "date-fns";
+// import { format } from "date-fns";
+import { useAppSelector } from "@/services/store/store";
 
 const Profile = () => {
     const [isEditing, setIsEditing] = useState(false);
-    const [profile, setProfile] = useState({
-        firstName: "Phan Van ",
-        lastName: "Hung",
-        phone: "+84 367988177",
-        gender: "Male",
-        birthday: new Date("2003-08-02"),
-        email: "hunglorfptu@gmail.com",
-        Address: "Bien Hoa, Dong Nai",
-    });
 
+    const { auth } = useAppSelector((state) => state.auth);
+    
     const [avatar, setAvatar] = useState(
         "https://scontent.fsgn5-3.fna.fbcdn.net/v/t39.30808-6/460869808_3762001557399439_4877959658229225624_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeG7ePPB6KZv4DwKgU2W3E-0XfZoyybNOQNd9mjLJs05A-LIsxdHXe-Aq0soB8TtVxPdzXyXVTwFUk_iGL7ZoN2R&_nc_ohc=mgjl8NOfvC8Q7kNvgHjC6Km&_nc_ht=scontent.fsgn5-3.fna&_nc_gid=AlskCHEJLhA9BZ0YE2PlONy&oh=00_AYBu5sTNv8Q1HT_szfS3GxlYs8yldKwgZuy_FreGN5XUKw&oe=66FC0F0F"
     );
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setProfile({ ...profile, [name]: value });
-    };
+
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -37,19 +28,8 @@ const Profile = () => {
         }
     };
 
-        const handleSaveChanges = () => {
-        const today = new Date();
-        const selectedDate = profile.birthday;
-        const age = today.getFullYear() - selectedDate.getFullYear();
+    
 
-        // Ensure the user is at least 15 years old
-        if (age < 15 || (age === 15 && today < new Date(selectedDate.setFullYear(today.getFullYear() - 15)))) {
-            alert("You must be at least 15 years old.");
-        } else {
-            alert("Profile updated");
-            setIsEditing(false); // Hide buttons after saving
-        }
-    };
 
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
@@ -86,7 +66,7 @@ const Profile = () => {
                                 )}
                             </div>
                             <h1 className="text-4xl font-semibold text-white mb-3">
-                                {profile.firstName} {profile.lastName}
+                                {auth?.firstName} {auth?.lastName}
                             </h1>
                             <p className="text-gray-400 mb-6">Owner at HairCare Platform</p>
                             {!isEditing && (
@@ -111,8 +91,8 @@ const Profile = () => {
                                             <input
                                                 type="text"
                                                 name="firstName"
-                                                value={profile.firstName}
-                                                onChange={handleChange}
+                                                value={auth?.firstName}
+                                                // onChange={handleChange}
                                                 className="w-full px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600"
                                             />
                                         </div>
@@ -121,8 +101,8 @@ const Profile = () => {
                                             <input
                                                 type="text"
                                                 name="lastName"
-                                                value={profile.lastName}
-                                                onChange={handleChange}
+                                                value={auth?.lastName}
+                                                // onChange={handleChange}
                                                 className="w-full px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600"
                                             />
                                         </div>
@@ -133,8 +113,8 @@ const Profile = () => {
                                             <input
                                                 type="text"
                                                 name="phone"
-                                                value={profile.phone}
-                                                onChange={handleChange}
+                                                value={"0367988177"}
+                                                // onChange={handleChange}
                                                 className="w-full px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600"
                                             />
                                         </div>
@@ -142,8 +122,9 @@ const Profile = () => {
                                             <label className="block font-medium">Gender</label>
                                             <select
                                                 name="gender"
-                                                value={profile.gender}
-                                                onChange={handleChange}
+                                                value={"Male"}
+                                                // onChange={handleChange}
+                                                disabled
                                                 className="w-full px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600"
                                             >
                                                 <option value="Female">Female</option>
@@ -153,10 +134,10 @@ const Profile = () => {
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div>
+                                        {/* <div>
                                             <label className="block font-medium">Birthday</label>
                                             <DatePicker
-                                                selected={profile.birthday}
+                                                selected={"1999-01-01"}
                                                 onChange={(date: Date | null) => {
                                                     if (date) {
                                                         setProfile({ ...profile, birthday: date });
@@ -165,14 +146,14 @@ const Profile = () => {
                                                 className="w-full px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600"
                                                 dateFormat="MMMM dd, yyyy" // Format in English
                                             />
-                                        </div>
+                                        </div> */}
                                         <div>
                                             <label className="block font-medium">Email</label>
                                             <input
                                                 type="email"
                                                 name="email"
-                                                value={profile.email}
-                                                onChange={handleChange}
+                                                value={auth?.email}
+                                                // onChange={handleChange}
                                                 className="w-full px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600"
                                             />
                                         </div>
@@ -183,8 +164,8 @@ const Profile = () => {
                                             <input
                                                 type="text"
                                                 name="Address"
-                                                value={profile.Address}
-                                                onChange={handleChange}
+                                                value={"Dong Nai"}
+                                                // onChange={handleChange}
                                                 className="w-full px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600"
                                             />
                                         </div>
@@ -198,7 +179,7 @@ const Profile = () => {
                                             Cancel
                                         </button>
                                         <button
-                                            onClick={handleSaveChanges}
+                                            // onClick={handleSaveChanges}
                                             className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-green-600"
                                         >
                                             Save Changes
@@ -211,13 +192,13 @@ const Profile = () => {
                                         <div>
                                             <label className="block font-medium text-gray-400">First Name</label>
                                             <p className="px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600">
-                                                {profile.firstName}
+                                                {auth?.firstName}
                                             </p>
                                         </div>
                                         <div>
                                             <label className="block font-medium text-gray-400">Last Name</label>
                                             <p className="px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600">
-                                                {profile.lastName}
+                                                {auth?.lastName}
                                             </p>
                                         </div>
                                     </div>
@@ -225,13 +206,13 @@ const Profile = () => {
                                         <div>
                                             <label className="block font-medium text-gray-400">Phone Number</label>
                                             <p className="px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600">
-                                                {profile.phone}
+                                                {"0367988177"}
                                             </p>
                                         </div>
                                         <div>
                                             <label className="block font-medium text-gray-400">Gender</label>
                                             <p className="px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600">
-                                                {profile.gender}
+                                                {"Male"}
                                             </p>
                                         </div>
                                     </div>
@@ -239,13 +220,14 @@ const Profile = () => {
                                         <div>
                                             <label className="block font-medium text-gray-400">Birthday</label>
                                             <p className="px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600">
-                                                {format(new Date(profile.birthday), "MMMM dd, yyyy")}
+                                                {/* {format(new Date(profile.birthday), "MMMM dd, yyyy")} */}
+                                                "1999-01-01"
                                             </p>
                                         </div>
                                         <div>
                                             <label className="block font-medium text-gray-400">Email</label>
                                             <p className="px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600">
-                                                {profile.email}
+                                                {auth?.email}
                                             </p>
                                         </div>
                                     </div>
@@ -253,7 +235,8 @@ const Profile = () => {
                                         <div>
                                             <label className="block font-medium text-gray-400"> Address</label>
                                             <p className="px-4 py-3 border rounded-lg bg-gray-800 text-white border-gray-600">
-                                                {profile.Address}
+                                                {/* {profile.Address} */}
+                                                {"Dong Nai"}
                                             </p>
                                         </div>
 
