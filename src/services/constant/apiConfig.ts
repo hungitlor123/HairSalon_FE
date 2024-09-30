@@ -10,3 +10,14 @@ export const GET_USER_ENDPOINT = `${BASE_URL}/get-all-user`;
 export const EDIT_USER_ENDPOINT = `${BASE_URL}/edit-user`;
 export const DELETE_USER_ENDPOINT = `${BASE_URL}/delete-user`;
 export const GET_USER_BY_ID_ENDPOINT = `${BASE_URL}/get-user-by-id`;
+
+
+//stylist
+export const GET_STYLIST_ENDPOINT = `${BASE_URL}/get-all-stylist`;
+export const GET_STYLIST_BY_ID_ENDPOINT = `${BASE_URL}/get-detail-stylist-by-id`;
+
+
+//service
+
+export const GET_SERVICE_ENDPOINT = `${BASE_URL}/get-all-services`;
+export const GET_SERVICE_BY_ID_ENDPOINT = `${BASE_URL}/get-detail-service-by-id`;
