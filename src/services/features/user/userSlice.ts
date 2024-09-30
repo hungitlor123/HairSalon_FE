@@ -1,5 +1,5 @@
 import { IEditUser, IUser } from "@/interfaces/User";
-import { GET_USER_ENDPOINT } from "@/services/constant/apiConfig";
+import { GET_USER_BY_ID_ENDPOINT, GET_USER_ENDPOINT } from "@/services/constant/apiConfig";
 import axiosInstance from "@/services/constant/axiosInstance";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
@@ -41,7 +41,7 @@ export const getUserById = createAsyncThunk<IUser, {id:number}>(
         const { id } = data;
         try {
             const token = sessionStorage.getItem('hairSalonToken');
-            const response = await axiosInstance.get(`${GET_USER_ENDPOINT}/${id}`, {
+            const response = await axiosInstance.get(`${GET_USER_BY_ID_ENDPOINT}/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
