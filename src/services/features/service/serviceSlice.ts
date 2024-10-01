@@ -1,5 +1,5 @@
 import { IService } from "@/interfaces/Service";
-import { GET_SERVICE_ENDPOINT } from "@/services/constant/apiConfig";
+import { GET_SERVICE_BY_ID_ENDPOINT, GET_SERVICE_ENDPOINT } from "@/services/constant/apiConfig";
 import axiosInstance from "@/services/constant/axiosInstance";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -36,7 +36,7 @@ export const getServiceById = createAsyncThunk<IService, { id: number }>(
     async (data, thunkAPI) => {
         const { id } = data;
         try {
-            const response = await axiosInstance.get(`${GET_SERVICE_ENDPOINT}/${id}`);
+            const response = await axiosInstance.get(`${GET_SERVICE_BY_ID_ENDPOINT}/${id}`);
             return response.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
@@ -79,3 +79,6 @@ export const serviceSlice = createSlice({
             });
     },
 });
+
+export const { setError } = serviceSlice.actions;
+export default serviceSlice.reducer;
