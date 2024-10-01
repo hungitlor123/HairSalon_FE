@@ -30,6 +30,8 @@ const AppRouter = () => {
             ) : (
                 <>
                     <Route path='/profile' element={<Profile />} />
+                    <Route path='/booking' element={<BookingPage />} />
+                    <Route path='/about' element={<AboutPage />} />
                     {isCustomer && (
 
                         <>
