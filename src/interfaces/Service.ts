@@ -3,11 +3,13 @@ export interface IService {
     name: string;
     descriptionMarkdown: string;
     descriptionHTML: string;
-    image: {
-        type: string;
-        data: number[];
-    };
+    image: IServiceImage;
     priceId: string;
     createdAt: string;
     updatedAt: string;
+}
+
+interface   IServiceImage {
+    type: string;
+    data: number[];
 }

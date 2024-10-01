@@ -23,7 +23,12 @@ export const getAllSertvice = createAsyncThunk<IService[], void>(
     "services/getAllService",
     async (_, thunkAPI) => {
         try {
-            const response = await axiosInstance.get(GET_SERVICE_ENDPOINT);
+            const token = sessionStorage.getItem('hairSalonToken');
+            const response = await axiosInstance.get(GET_SERVICE_ENDPOINT,{
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            });
             return response.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
@@ -36,7 +41,13 @@ export const getServiceById = createAsyncThunk<IService, { id: number }>(
     async (data, thunkAPI) => {
         const { id } = data;
         try {
-            const response = await axiosInstance.get(`${GET_SERVICE_BY_ID_ENDPOINT}/${id}`);
+            const token = sessionStorage.getItem('hairSalonToken');
+            const response = await axiosInstance.get(`${GET_SERVICE_BY_ID_ENDPOINT}/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             return response.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
