@@ -192,9 +192,7 @@ export const authSlice = createSlice({
             .addCase(loginAccount.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-                // Có thể thêm logic để xử lý việc điều hướng từ phía component nếu cần
             });
-        // Refresh access token
         builder.addCase(refreshAccessToken.fulfilled, (state, action: PayloadAction<string>) => {
             if (state.auth) {
                 state.auth.accessToken = action.payload;
