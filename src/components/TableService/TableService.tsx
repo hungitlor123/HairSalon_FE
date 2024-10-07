@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
     Table,
     TableBody,
@@ -9,16 +10,32 @@ import {
 } from "@/components/ui/table";
 import { useAppSelector } from "@/services/store/store";
 import { formatAnyDate } from "@/utils";
+import CreateServicePopup from "../popup/CreateService/CreateServicePopup";
 
 const TableService = () => {
     const { services } = useAppSelector(state => state.services);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+    const openPopup = () => {
+        setIsPopupOpen(true);
+    };
+
+    const closePopup = () => {
+        setIsPopupOpen(false);
+    };
+
     return (
         <>
             <div className="my-6 flex flex-row justify-between items-center">
                 <h2 className="font-bold text-xl">List Service Management</h2>
-                <button className="border border-slate-600 p-2 rounded-lg text-white bg-green-600 font-bold">Create Service</button>
-
+                <button
+                    className="border border-slate-600 p-2 rounded-lg text-white bg-green-600 font-bold"
+                    onClick={openPopup}
+                >
+                    Create Service
+                </button>
             </div>
+
             <Table>
                 <TableCaption>A list of your recent invoices.</TableCaption>
                 <TableHeader>
@@ -53,8 +70,11 @@ const TableService = () => {
                     ))}
                 </TableBody>
             </Table>
+
+            {/* Popup component */}
+            <CreateServicePopup isOpen={isPopupOpen} onClose={closePopup} />
         </>
     );
-}
+};
 
 export default TableService;
