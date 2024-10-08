@@ -28,3 +28,4 @@ export const GET_SERVICE_BY_ID_ENDPOINT = `${BASE_URL}/get-detail-service-by-id`
 //allCode
 
 export const GET_ALL_CODE_ENDPOINT = `${BASE_URL}/get-allcode`;
+export const GET_ALL_TIME_BOOKING_ENDPOINT = `${BASE_URL}/get-schedule-stylist-by-date`;
