@@ -52,7 +52,7 @@ export const getAllTimeByStylist = createAsyncThunk<
                     Authorization: `Bearer ${token}`,
                 },
             });
-            return response.data;
+            return response.data.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
         }
