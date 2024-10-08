@@ -1,7 +1,7 @@
 import { ITimeBooking } from "@/interfaces/Time";
 import { getAllService } from "@/services/features/service/serviceSlice";
 import { getAllStylist } from "@/services/features/stylist/stylistSlice";
-import { getAllTime, getAllTimeByStylist } from "@/services/features/timeBooking/timeBookingSlice";
+import { getAllTimeByStylist } from "@/services/features/timeBooking/timeBookingSlice";
 import { useAppDispatch, useAppSelector } from "@/services/store/store";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
