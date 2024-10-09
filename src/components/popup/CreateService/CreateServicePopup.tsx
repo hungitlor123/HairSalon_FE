@@ -24,14 +24,20 @@ const CreateServicePopup: FC<CreateServicePopupProps> = ({ isOpen, onClose }) =>
         formData.append('name', data.name);
         formData.append('description', data.description);
 
+        // Append the image file with the correct key
         if (data.image && data.image.length > 0) {
-            formData.append('image', data.image[0]);
+            formData.append('imageFile', data.image[0]); // Changed 'image' to 'imageFile'
         } else {
             console.error("Image file not found");
             return;
         }
 
         formData.append('price', data.price.toString());
+
+        // Debugging: Log FormData entries to ensure everything is appended correctly
+        // for (const pair of formData.entries()) {
+        //     console.log(`${pair[0]}, ${pair[1]}`);
+        // }
 
         // Dispatch the thunk action with formData
         const result = await dispatch(createService(formData));
@@ -40,7 +46,6 @@ const CreateServicePopup: FC<CreateServicePopupProps> = ({ isOpen, onClose }) =>
             onClose();
         }
     };
-
 
     return (
         <div

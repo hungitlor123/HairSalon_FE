@@ -6,7 +6,7 @@ interface SideBarProps {
 }
 
 const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
@@ -61,7 +61,7 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
                         </li>
                         <li>
                             <Link
-                                to="#"
+                                to="/service-management"
                                 className="flex items-center p-2 text-gray-300 rounded-lg hover:bg-gray-700 group"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
@@ -72,7 +72,7 @@ const SideBar: React.FC<SideBarProps> = ({ onToggle }) => {
                         </li>
                         <li>
                             <Link
-                                to="#"
+                                to="/stylist-management"
                                 className="flex items-center p-2 text-gray-300 rounded-lg hover:bg-gray-700 group"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
