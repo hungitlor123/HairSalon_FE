@@ -45,7 +45,7 @@ const TableService = () => {
                         <TableHead>Description</TableHead>
                         <TableHead className="text-right">Create At</TableHead>
                         <TableHead className="text-right">Update At</TableHead>
-                        <TableHead>Action</TableHead>
+                        <TableHead className="text-right">Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
