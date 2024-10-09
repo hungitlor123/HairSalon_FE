@@ -1,4 +1,6 @@
+import { IBookingRequest } from "@/interfaces/Booking";
 import { ITimeBooking } from "@/interfaces/Time";
+import { customerCreateBooking } from "@/services/features/booking/bookingSlice";
 import { getAllService } from "@/services/features/service/serviceSlice";
 import { getAllStylist } from "@/services/features/stylist/stylistSlice";
 import { getAllTimeByStylist } from "@/services/features/timeBooking/timeBookingSlice";
@@ -9,7 +11,7 @@ import { toast } from "react-toastify";
 
 interface FormData {
     phone: string;
-    fullname: string;
+    fullName: string;
     email: string;
     stylistId: string;
     stylistName: string;
@@ -18,6 +20,8 @@ interface FormData {
     timeType: string;
     timeString: string;
     note?: string;
+    address: string;
+    selectedGender: string;
 }
 
 const BookingForm = () => {
@@ -100,11 +104,6 @@ const BookingForm = () => {
             return;
         }
 
-        // if (!data.timeType) {
-        //     toast.error('Vui lòng chọn khung giờ dịch vụ');
-        //     return;
-        // }
-
         // Convert date to timestamp (keeping date as timestamp)
         const date = new Date(data.date).getTime();
 
@@ -127,10 +126,23 @@ const BookingForm = () => {
             timeString,  // Formatted date and time string (e.g., "10/07/2024 - 9PM")
             stylistName,  // FirstName + LastName
             serviceIds,
-            amount: totalAmount
-        };
+            amount: totalAmount,
+            selectedGender: "Nam",
+            address: "Hà Nội",
+        } as IBookingRequest;
 
-        console.log(payload);
+        dispatch(customerCreateBooking(payload))
+            .unwrap()
+            .then((response) => {
+                if (response.errCode === 0) {
+                    toast.success("Booking successfully, please check your email.");
+                } else {
+                    toast.error(response.errMsg); // Hiển thị thông báo lỗi từ backend
+                }
+            })
+            .catch((error) => {
+                toast.error(error.errMsg || 'Đã có lỗi xảy ra trong quá trình đặt lịch.');
+            });
     };
 
     return (
@@ -151,10 +163,10 @@ const BookingForm = () => {
                 <label className="block text-sm font-bold mb-2">Họ và tên *</label>
                 <input
                     type="text"
-                    {...register("fullname", { required: true })}
+                    {...register("fullName", { required: true })}
                     className="w-full p-3 bg-zinc-800 border border-zinc-700 text-white rounded focus:outline-none focus:border-yellow-500"
                 />
-                {errors.fullname && <span className="text-red-500">Họ và tên là bắt buộc</span>}
+                {errors.fullName && <span className="text-red-500">Họ và tên là bắt buộc</span>}
             </div>
 
             <div className="mb-4">
