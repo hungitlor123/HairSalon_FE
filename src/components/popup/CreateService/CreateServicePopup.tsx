@@ -1,10 +1,12 @@
+import { createService, getAllService } from "@/services/features/service/serviceSlice";
+import { useAppDispatch } from "@/services/store/store";
 import { FC } from "react";
 import { useForm } from "react-hook-form";
 
 type FormServiceData = {
     name: string;
     description: string;
-    image: File;
+    image: FileList; // Changed from File[] to File
     price: number;
 };
 
@@ -14,12 +16,31 @@ type CreateServicePopupProps = {
 };
 
 const CreateServicePopup: FC<CreateServicePopupProps> = ({ isOpen, onClose }) => {
+    const dispatch = useAppDispatch();
     const { register, handleSubmit, formState: { errors } } = useForm<FormServiceData>();
 
-    const onSubmit = (data: FormServiceData) => {
-        console.log(data); // Handle service creation logic here
-        onClose(); // Close the popup after submission
+    const onSubmit = async (data: FormServiceData) => {
+        const formData = new FormData();
+        formData.append('name', data.name);
+        formData.append('description', data.description);
+
+        if (data.image && data.image.length > 0) {
+            formData.append('image', data.image[0]);
+        } else {
+            console.error("Image file not found");
+            return;
+        }
+
+        formData.append('price', data.price.toString());
+
+        // Dispatch the thunk action with formData
+        const result = await dispatch(createService(formData));
+        if (createService.fulfilled.match(result)) {
+            await dispatch(getAllService());
+            onClose();
+        }
     };
+
 
     return (
         <div
@@ -58,6 +79,7 @@ const CreateServicePopup: FC<CreateServicePopupProps> = ({ isOpen, onClose }) =>
                         <label className="block text-gray-700 dark:text-gray-400">Image</label>
                         <input
                             type="file"
+                            accept="image/*"
                             {...register("image", { required: "Image file is required" })}
                             className="w-full px-3 py-2 mt-1 border rounded-lg dark:bg-gray-700 dark:text-gray-300"
                         />
