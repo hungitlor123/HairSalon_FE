@@ -64,14 +64,17 @@ export const createService = createAsyncThunk<IService, FormData>(
             const response = await axiosInstance.post(CREATE_SERVICE_ENDPOINT, data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data',
+                    // Remove 'Content-Type': 'multipart/form-data' header here
                 },
             });
-            if (response.data.success) {
+
+            // Check errCode for success instead of response.data.success
+            if (response.data.errCode === 0) {
                 toast.success(`${response.data.errMessage}`);
             } else {
                 toast.error(`${response.data.errMessage}`);
             }
+
             return response.data;
         } catch (error: any) {
             toast.error(`${error.response.data.errors}`);
