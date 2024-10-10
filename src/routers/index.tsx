@@ -62,6 +62,8 @@ const AppRouter = () => {
                         <>
                             <Route path='/profile' element={<Profile />} />
                             <Route path='/service-management' element={<ServiceManagement />} />
+                            <Route path='/stylist-management' element={<StylistManagement />} />
+
 
                         </>
                     )}
