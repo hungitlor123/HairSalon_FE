@@ -12,12 +12,16 @@ import { useAppSelector, useAppDispatch } from "@/services/store/store";
 import { formatAnyDate } from "@/utils";
 import ConfirmDelete from "../popup/ConfirmDelete/ConfirmDelete";
 import { deleteService, getAllService } from "@/services/features/service/serviceSlice";
+import UpdateServicePopup from "../popup/UpdateService/UpdateService";
+import { IService } from "@/interfaces/Service";
 
 const TableService = () => {
-    const dispatch = useAppDispatch(); // Khởi tạo dispatch
+    const dispatch = useAppDispatch();
     const { services } = useAppSelector(state => state.services);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [serviceIdToDelete, setServiceIdToDelete] = useState<number | null>(null); // Thêm kiểu cho ID
+    const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // State to control edit popup
+    const [serviceIdToDelete, setServiceIdToDelete] = useState<number | null>(null);
+    const [serviceToEdit, setServiceToEdit] = useState<any>(null); // State to store the service to edit
 
     const openPopup = () => {
         setIsPopupOpen(true);
@@ -25,19 +29,29 @@ const TableService = () => {
 
     const closePopup = () => {
         setIsPopupOpen(false);
-        setServiceIdToDelete(null); // Reset ID khi đóng popup
+        setServiceIdToDelete(null);
+    };
+
+    const openEditPopup = (service: IService) => {
+        setServiceToEdit(service); // Set the service to be edited
+        setIsEditPopupOpen(true); // Open the edit popup
+    };
+
+    const closeEditPopup = () => {
+        setIsEditPopupOpen(false);
+        setServiceToEdit(null);
     };
 
     const handleDeleteClick = (id: number) => {
-        setServiceIdToDelete(id); // Lưu ID dịch vụ cần xóa
-        setIsPopupOpen(true); // Mở popup xác nhận
+        setServiceIdToDelete(id);
+        setIsPopupOpen(true);
     };
 
     const handleConfirmDelete = async () => {
         if (serviceIdToDelete !== null) {
-            await dispatch(deleteService({ id: serviceIdToDelete })); // Gọi action xóa dịch vụ
-            dispatch(getAllService()); // Lấy lại danh sách dịch vụ
-            closePopup(); // Đóng popup sau khi thực hiện xóa
+            await dispatch(deleteService({ id: serviceIdToDelete }));
+            dispatch(getAllService());
+            closePopup();
         }
     };
 
@@ -90,10 +104,15 @@ const TableService = () => {
                                         {formatAnyDate(service.updatedAt)}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <button className="border border-slate-600 p-2 rounded-lg text-white bg-slate-800 font-bold">Edit</button>
+                                        <button
+                                            className="border border-slate-600 p-2 rounded-lg text-white bg-slate-800 font-bold"
+                                            onClick={() => openEditPopup(service)} // Open edit modal with service details
+                                        >
+                                            Edit
+                                        </button>
                                         <button
                                             className="border border-slate-600 p-2 rounded-lg text-white bg-red-600 font-bold ml-2"
-                                            onClick={() => handleDeleteClick(service.id)} // Gọi hàm xóa với ID dịch vụ
+                                            onClick={() => handleDeleteClick(service.id)}
                                         >
                                             Delete
                                         </button>
@@ -117,6 +136,15 @@ const TableService = () => {
                 onClose={closePopup}
                 onConfirm={handleConfirmDelete}
             />
+
+            {/* Update service modal */}
+            {serviceToEdit && (
+                <UpdateServicePopup
+                    isOpen={isEditPopupOpen}
+                    onClose={closeEditPopup}
+                    service={serviceToEdit} // Pass the specific service to edit
+                />
+            )}
         </>
     );
 };
