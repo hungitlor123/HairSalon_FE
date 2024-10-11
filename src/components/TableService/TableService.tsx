@@ -14,6 +14,7 @@ import ConfirmDelete from "../popup/ConfirmDelete/ConfirmDelete";
 import { deleteService, getAllService } from "@/services/features/service/serviceSlice";
 import UpdateServicePopup from "../popup/UpdateService/UpdateService";
 import { IService } from "@/interfaces/Service";
+import CreateServicePopup from "../popup/CreateService/CreateServicePopup";
 
 const TableService = () => {
     const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ const TableService = () => {
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // State to control edit popup
     const [serviceIdToDelete, setServiceIdToDelete] = useState<number | null>(null);
     const [serviceToEdit, setServiceToEdit] = useState<any>(null); // State to store the service to edit
+    const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
 
     const openPopup = () => {
         setIsPopupOpen(true);
@@ -61,7 +63,7 @@ const TableService = () => {
                 <h2 className="font-bold text-xl">List Service Management</h2>
                 <button
                     className="border border-slate-600 p-2 rounded-lg text-white bg-green-600 font-bold"
-                    onClick={openPopup}
+                    onClick={() => setIsCreatePopupOpen(true)} // Sử dụng trạng thái riêng
                 >
                     Create Service
                 </button>
@@ -129,6 +131,11 @@ const TableService = () => {
                     )}
                 </TableBody>
             </Table>
+
+            <CreateServicePopup
+                isOpen={isCreatePopupOpen}
+                onClose={() => setIsCreatePopupOpen(false)}
+            />
 
             {/* Popup xác nhận xóa */}
             <ConfirmDelete
