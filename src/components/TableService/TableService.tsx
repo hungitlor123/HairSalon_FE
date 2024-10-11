@@ -57,17 +57,6 @@ const TableService = () => {
             closeDeletePopup();
         }
     };
-
-    // Open create service popup
-    const openCreatePopup = () => {
-        setIsCreatePopupOpen(true);
-    };
-
-    // Close create service popup
-    const closeCreatePopup = () => {
-        setIsCreatePopupOpen(false);
-    };
-
     return (
         <>
             <div className="my-6 flex flex-row justify-between items-center">
