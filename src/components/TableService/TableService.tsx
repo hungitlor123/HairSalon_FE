@@ -25,10 +25,6 @@ const TableService = () => {
     const [serviceToEdit, setServiceToEdit] = useState<any>(null); // State to store the service to edit
     const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
 
-    const openPopup = () => {
-        setIsPopupOpen(true);
-    };
-
     const closePopup = () => {
         setIsPopupOpen(false);
         setServiceIdToDelete(null);
