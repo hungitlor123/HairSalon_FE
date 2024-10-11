@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { useAppSelector, useAppDispatch } from "@/services/store/store";
 import { formatAnyDate } from "@/utils";
-import ConfirmDelete from "../popup/ConfirmDelete/ConfirmDelete";
+import ConfirmDelete from "../popup/ConfirmDelete/ConfirmDelete"; // Import ConfirmDelete component
 import { deleteService, getAllService } from "@/services/features/service/serviceSlice";
 import UpdateServicePopup from "../popup/UpdateService/UpdateService";
 import { IService } from "@/interfaces/Service";
@@ -19,13 +19,16 @@ import CreateServicePopup from "../popup/CreateService/CreateServicePopup";
 const TableService = () => {
     const dispatch = useAppDispatch();
     const { services } = useAppSelector(state => state.services);
+
+    // State for delete confirmation popup
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false); // State to control edit popup
     const [serviceIdToDelete, setServiceIdToDelete] = useState<number | null>(null);
     const [serviceToEdit, setServiceToEdit] = useState<any>(null); // State to store the service to edit
     const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
 
-    const closePopup = () => {
+    // Close delete confirmation popup
+    const closeDeletePopup = () => {
         setIsPopupOpen(false);
         setServiceIdToDelete(null);
     };
@@ -40,17 +43,29 @@ const TableService = () => {
         setServiceToEdit(null);
     };
 
+    // Handle delete button click
     const handleDeleteClick = (id: number) => {
         setServiceIdToDelete(id);
         setIsPopupOpen(true);
     };
 
+    // Confirm and execute service deletion
     const handleConfirmDelete = async () => {
         if (serviceIdToDelete !== null) {
             await dispatch(deleteService({ id: serviceIdToDelete }));
             dispatch(getAllService());
-            closePopup();
+            closeDeletePopup();
         }
+    };
+
+    // Open create service popup
+    const openCreatePopup = () => {
+        setIsCreatePopupOpen(true);
+    };
+
+    // Close create service popup
+    const closeCreatePopup = () => {
+        setIsCreatePopupOpen(false);
     };
 
     return (
@@ -66,7 +81,7 @@ const TableService = () => {
             </div>
 
             <Table>
-                <TableCaption>A list of your recent invoices.</TableCaption>
+                <TableCaption>A list of your recent services.</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[150px]">Name</TableHead>
@@ -136,7 +151,7 @@ const TableService = () => {
             {/* Popup xác nhận xóa */}
             <ConfirmDelete
                 isOpen={isPopupOpen}
-                onClose={closePopup}
+                onClose={closeDeletePopup}
                 onConfirm={handleConfirmDelete}
             />
 
