@@ -1,14 +1,14 @@
 import { IService } from "@/interfaces/Service";
 import { updateService, getAllService } from "@/services/features/service/serviceSlice";
 import { useAppDispatch } from "@/services/store/store";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 type FormServiceData = {
     id: number;
     name: string;
     description: string;
-    image: FileList;
+    image: FileList | string;  // Allow both FileList and string for image
     price: number;
 };
 
@@ -20,6 +20,7 @@ type UpdateServicePopupProps = {
 
 const UpdateServicePopup: FC<UpdateServicePopupProps> = ({ isOpen, onClose, service }) => {
     const dispatch = useAppDispatch();
+    const [imageUrl, setImageUrl] = useState<string | null>(service.image || null);  // Store the image URL
 
     // Use form and set default values to the selected service
     const { register, handleSubmit, reset, formState: { errors } } = useForm<FormServiceData>({
@@ -35,8 +36,9 @@ const UpdateServicePopup: FC<UpdateServicePopupProps> = ({ isOpen, onClose, serv
     useEffect(() => {
         reset({
             ...service,
-            price: Number(service.price),  // Ensure price is a number
+            price: Number(service.price),
         });
+        setImageUrl(service.image || null);  // Update imageUrl when service changes
     }, [service, reset]);
 
     const onSubmit = async (data: FormServiceData) => {
@@ -45,8 +47,8 @@ const UpdateServicePopup: FC<UpdateServicePopupProps> = ({ isOpen, onClose, serv
         formData.append('name', data.name);
         formData.append('description', data.description);
 
-        if (data.image && data.image.length > 0) {
-            formData.append('image', data.image[0]);
+        if (data.image && typeof data.image !== 'string' && data.image.length > 0) {
+            formData.append('image', data.image[0]);  // Append new image if selected
         }
 
         formData.append('price', data.price.toString());
@@ -95,6 +97,9 @@ const UpdateServicePopup: FC<UpdateServicePopupProps> = ({ isOpen, onClose, serv
                         <label className="block text-gray-700 dark:text-gray-400">
                             Image
                         </label>
+                        {imageUrl && (
+                            <img src={imageUrl} alt="Service" className="mb-2 w-full h-40 object-cover rounded-lg" />
+                        )}
                         <input
                             type="file"
                             {...register("image")}
