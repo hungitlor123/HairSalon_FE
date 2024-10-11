@@ -1,7 +1,9 @@
+import { IAccount, IRegister } from "@/interfaces/Account";
 import { IStylist } from "@/interfaces/Stylist";
-import { GET_STYLIST_BY_ID_ENDPOINT, GET_STYLIST_ENDPOINT } from "@/services/constant/apiConfig";
+import { GET_STYLIST_BY_ID_ENDPOINT, GET_STYLIST_ENDPOINT, REGISTER_ENDPOINT } from "@/services/constant/apiConfig";
 import axiosInstance from "@/services/constant/axiosInstance";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 
 
 
@@ -54,6 +56,26 @@ export const getStylistById = createAsyncThunk<IStylist, {id:number}>(
     }
 );
 
+export const createStylist = createAsyncThunk<IAccount, IRegister>(
+    "stylists/createStylist",
+    async (data, thunkAPI) => {
+        try {
+            const response = await axiosInstance.post(REGISTER_ENDPOINT, data);
+            if (response.data.success === false) {
+                toast.error(response.data.errMessage);
+            }
+            if (response.data.success === true) {
+                toast.success("Register Successfully");
+            }
+
+            return response.data;
+        } catch (error: any) {
+            toast.error("Server Error");
+            return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
+        }
+    }
+);
+
 export const stylistSlice = createSlice({
     name: "stylists",
     initialState,
@@ -86,6 +108,19 @@ export const stylistSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         });
+        //createStylist
+        builder.addCase(createStylist.pending, (state) => {
+            state.loading = true;
+        });
+        builder.addCase(createStylist.fulfilled, (state) => {
+            state.loading = false;
+        });
+        builder.addCase(createStylist.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        });
+
+        
     },
 
 });

@@ -1,12 +1,15 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useAppDispatch } from "@/services/store/store";
+import { createStylist, getAllStylist } from "@/services/features/stylist/stylistSlice";
+import { toast } from "react-toastify";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 type FormStylistData = {
     email: string;
     password: string;
     lastName: string;
     firstName: string;
-    roleId: string;
     phoneNumber: string;
 };
 
@@ -16,11 +19,35 @@ type CreateStylistPopupProps = {
 };
 
 const CreateStylistPopup: FC<CreateStylistPopupProps> = ({ isOpen, onClose }) => {
+    const dispatch = useAppDispatch();
     const { register, handleSubmit, formState: { errors } } = useForm<FormStylistData>();
 
-    const onSubmit = (data: FormStylistData) => {
-        console.log(data); // Handle stylist creation logic here
-        onClose(); // Close the popup after submission
+    const [showPassword, setShowPassword] = useState(false);
+
+    // Handler for toggling password visibility
+    const handleShowPass = () => setShowPassword(!showPassword);
+
+    const onSubmit = async (data: FormStylistData) => {
+        const formData = {
+            ...data,
+            roleId: "R3", // Set roleId to "R3" for creating a stylist
+            confirmPassword: data.password, // Assuming confirmPassword is the same as password
+            success: true // Assuming success is a boolean value
+        };
+
+        try {
+            const result = await dispatch(createStylist(formData));
+
+            if (createStylist.fulfilled.match(result)) {
+                await dispatch(getAllStylist());
+                onClose();
+            } else {
+                toast.error("Failed to create stylist");
+            }
+        } catch (error) {
+            console.error("Error creating stylist:", error);
+            toast.error("Error creating stylist");
+        }
     };
 
     return (
@@ -72,11 +99,19 @@ const CreateStylistPopup: FC<CreateStylistPopupProps> = ({ isOpen, onClose }) =>
                         <label className="block text-gray-700 dark:text-gray-400">
                             Password
                         </label>
-                        <input
-                            type="password"
-                            {...register("password", { required: "Password is required" })}
-                            className="w-full px-3 py-2 mt-1 border rounded-lg dark:bg-gray-700 dark:text-gray-300"
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                {...register("password", { required: "Password is required", minLength: { value: 6, message: "Password must be at least 6 characters" } })}
+                                className="w-full px-3 py-2 mt-1 border rounded-lg dark:bg-gray-700 dark:text-gray-300"
+                            />
+                            <div
+                                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white cursor-pointer text-lg"
+                                onClick={handleShowPass}
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </div>
+                        </div>
                         {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
                     </div>
 
@@ -92,8 +127,6 @@ const CreateStylistPopup: FC<CreateStylistPopupProps> = ({ isOpen, onClose }) =>
                         {errors.phoneNumber && <p className="text-red-500 text-sm">{errors.phoneNumber.message}</p>}
                     </div>
 
-                    <input type="hidden" value="R3" {...register("roleId")} /> {/* Role is fixed as "R3" */}
-
                     <div className="flex justify-between items-center space-y-4 sm:flex sm:space-y-0">
                         <button
                             type="button"
@@ -104,7 +137,7 @@ const CreateStylistPopup: FC<CreateStylistPopupProps> = ({ isOpen, onClose }) =>
                         </button>
                         <button
                             type="submit"
-                            className="py-2 px-4 w-full text-sm font-medium text-white bg-green-700 rounded-lg sm:w-auto hover:bg-green-800 focus:ring-4 focus:outline-none "
+                            className="py-2 px-4 w-full text-sm font-medium text-white bg-green-700 rounded-lg sm:w-auto hover:bg-green-800 focus:ring-4 focus:outline-none"
                         >
                             Create Stylist
                         </button>
