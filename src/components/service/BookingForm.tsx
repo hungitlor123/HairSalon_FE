@@ -3,7 +3,7 @@ import { ITimeBooking } from "@/interfaces/Time";
 import { customerCreateBooking } from "@/services/features/booking/bookingSlice";
 import { getAllService } from "@/services/features/service/serviceSlice";
 import { getAllStylist } from "@/services/features/stylist/stylistSlice";
-import { getAllTimeByStylist } from "@/services/features/timeBooking/timeBookingSlice";
+import { getAllTime, getAllTimeByStylist } from "@/services/features/timeBooking/timeBookingSlice";
 import { useAppDispatch, useAppSelector } from "@/services/store/store";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -35,11 +35,12 @@ const BookingForm = () => {
     const { services } = useAppSelector((state) => state.services);
     const { times } = useAppSelector((state) => state.times);
 
-    const { register, handleSubmit, setValue, watch, formState: { errors }, trigger } = useForm<FormData>();
+    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>();
 
     useEffect(() => {
         dispatch(getAllService());
         dispatch(getAllStylist());
+        dispatch(getAllTime());
         setShowService(true);
         setShowStylist(true);
     }, [dispatch]);
@@ -107,25 +108,26 @@ const BookingForm = () => {
             return;
         }
 
-        // Convert date to timestamp
+        // Chuyển đổi ngày sang timestamp
         const date = new Date(data.date).getTime();
 
-        // Format date and time
+        // Định dạng lại ngày và thời gian sang giờ Việt Nam
         const selectedTime = times?.find(time => time.keyMap === data.timeType);
-        const formattedDate = new Date(data.date).toLocaleDateString('en-GB');
-        const timeString = `${formattedDate} - ${selectedTime?.valueEn || ''}`;
+        const formattedDate = new Date(data.date).toLocaleDateString('vi-VN', {
+            timeZone: 'Asia/Ho_Chi_Minh',
+        });
+        const timeString = `${formattedDate} - ${selectedTime?.valueVi || ''}`; // valueVi cho tiếng Việt
 
-        // Get stylist's full name
+        // Lấy tên đầy đủ của stylist
         const stylist = stylists?.find(s => s.id === Number(data.stylistId));
         const stylistName = stylist ? `${stylist.firstName} ${stylist.lastName}` : '';
 
-        // Convert serviceIds from string[] to number[]
+        // Chuyển đổi serviceIds từ string[] sang number[]
         const serviceIds = selectedServices.map(s => Number(s.id));
 
         const payload = {
             ...data,
             date,
-            timeType: selectedTime?.keyMap,
             timeString,
             stylistName,
             serviceIds,
@@ -146,7 +148,6 @@ const BookingForm = () => {
                 toast.error(error.errMsg || 'An error occurred while booking.');
             });
     };
-
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="bg-[#201717] p-8 rounded-md shadow-md text-white">
             <p className="text-red-500 font-semibold text-sm mb-4">* Required fields</p>
@@ -252,24 +253,26 @@ const BookingForm = () => {
                 <label className="block text-sm font-bold mb-2">Select Time *</label>
                 <div className="grid grid-cols-4 gap-2">
                     {availableTimes.length > 0 ? (
-                        availableTimes.map((timeType, index) => (
-                            <button
-                                key={index}
-                                type="button"
-                                className={`p-3 rounded border ${watch("timeType") === timeType.timeType.toString() ? "bg-yellow-500 text-black" : "bg-white text-black"
-                                    } focus:outline-none hover:bg-yellow-400`}
-                                onClick={() => {
-                                    setValue("timeType", timeType.timeType.toString());
-                                    trigger("timeType");
-                                }}
-                            >
-                                {timeType.timeTypeData.valueEn}
-                            </button>
-                        ))
+                        availableTimes.map((timeType, index) => {
+                            return (
+                                <button
+                                    key={index}
+                                    type="button"
+                                    className={`p-3 rounded border ${watch("timeType") === timeType.timeType ? "bg-yellow-500 text-black" : "bg-white text-black"
+                                        } focus:outline-none hover:bg-yellow-400`}
+                                    onClick={() => {
+                                        setValue("timeType", timeType.timeType); // Make sure this sets the timeType correctly
+                                    }}
+                                >
+                                    {timeType.timeTypeData.valueVi}
+                                </button>
+                            );
+                        })
                     ) : (
                         <p className="font-semibold text-red-600">No available time slots</p>
                     )}
                 </div>
+
                 {errors.timeType && <span className="text-red-500">Time slot is required</span>}
             </div>
 
