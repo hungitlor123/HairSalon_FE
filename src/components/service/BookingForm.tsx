@@ -4,6 +4,7 @@ import { customerCreateBooking } from "@/services/features/booking/bookingSlice"
 import { getAllService } from "@/services/features/service/serviceSlice";
 import { getAllStylist } from "@/services/features/stylist/stylistSlice";
 import { getAllTimeByStylist } from "@/services/features/timeBooking/timeBookingSlice";
+import { getUserById } from "@/services/features/user/userSlice";
 import { useAppDispatch, useAppSelector } from "@/services/store/store";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -171,6 +172,7 @@ const BookingForm = () => {
             .then((response) => {
                 if (response.errCode === 0) {
                     toast.success("Booking successful, please check your email.");
+                    dispatch(getUserById({ id: auth?.id ?? 0 }));
                 } else {
                     toast.error(response.errMsg);
                 }
