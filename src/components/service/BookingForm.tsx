@@ -170,6 +170,8 @@ const BookingForm = () => {
                     toast.success("Booking successful, please check your email.");
                     dispatch(getUserById({ id: auth?.id ?? 0 }));
 
+
+
                 } else {
                     toast.error(response.errMsg);
                 }
