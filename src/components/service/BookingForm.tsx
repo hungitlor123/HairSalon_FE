@@ -33,7 +33,7 @@ const BookingForm = () => {
     const [totalAmount, setTotalAmount] = useState<number>(0);
     const [availableTimes, setAvailableTimes] = useState<ITimeBooking[]>([]);
     const [discountedAmount, setDiscountedAmount] = useState<number>(0);
-    const [pointsApplied, setPointsApplied] = useState<boolean>(false); // Track if points are applied
+    const [pointsApplied, setPointsApplied] = useState<boolean>(false);
 
     const { stylists } = useAppSelector((state) => state.stylists);
     const { services } = useAppSelector((state) => state.services);
@@ -71,11 +71,11 @@ const BookingForm = () => {
         const amount = selectedServices.reduce((acc, service) => acc + service.price, 0);
         setTotalAmount(amount);
 
-        // If points have been applied, update the total after discount
-        if (pointsApplied) {
+        // If points have been applied and the user is logged in, update the total after discount
+        if (pointsApplied && auth) {
             handlePointsDiscount(pointsToUse, amount);
         } else {
-            setDiscountedAmount(amount);
+            setDiscountedAmount(amount); // No discount applied if not logged in or no points are used
         }
     };
 
@@ -117,12 +117,12 @@ const BookingForm = () => {
 
     // Apply points and update the total with the discount
     const applyPoints = () => {
-        if (pointsToUse > 0) {
+        if (auth && pointsToUse > 0) {
             setPointsApplied(true);
             handlePointsDiscount(pointsToUse, totalAmount); // Apply points and calculate the new total
         } else {
             setPointsApplied(false);
-            setDiscountedAmount(totalAmount); // Reset to original total if no points are applied
+            setDiscountedAmount(totalAmount); // Reset to original total if no points or not logged in
         }
     };
 
@@ -137,12 +137,8 @@ const BookingForm = () => {
             return;
         }
 
-        if (data.pointsToUse > (user?.points ?? 0)) {
-            toast.error(`You cannot use more than ${user?.points} points.`);
-            return;
-        }
+        data.usePoints = (data.pointsToUse && data.pointsToUse > 0) ? true : false;
 
-        data.usePoints = pointsApplied;
 
         const date = new Date(data.date).getTime();
         const selectedTime = availableTimes?.find(time => time.timeType === data.timeType);
@@ -153,7 +149,7 @@ const BookingForm = () => {
         const stylistName = stylist ? `${stylist.firstName} ${stylist.lastName}` : '';
         const serviceIds = selectedServices.map(s => Number(s.id));
 
-        const discount = Math.floor(data.pointsToUse / 10);
+        const discount = auth ? Math.floor(data.pointsToUse / 10) : 0; // Apply discount only if authenticated
         const finalAmount = totalAmount - discount;
 
         const payload = {
@@ -162,9 +158,9 @@ const BookingForm = () => {
             timeString,
             stylistName,
             serviceIds,
-            amount: finalAmount,
-            pointsToUse: data.pointsToUse,
-            usePoints: data.usePoints,
+            amount: finalAmount > 0 ? finalAmount : 0, // Ensure amount doesn't go below 0
+            pointsToUse: auth ? data.pointsToUse : 0, // Use points only if authenticated
+            usePoints: data.usePoints, // Now correctly set to false if no points are used
         } as IBookingRequest;
 
         dispatch(customerCreateBooking(payload))
@@ -173,6 +169,9 @@ const BookingForm = () => {
                 if (response.errCode === 0) {
                     toast.success("Booking successful, please check your email.");
                     dispatch(getUserById({ id: auth?.id ?? 0 }));
+
+
+
                 } else {
                     toast.error(response.errMsg);
                 }
