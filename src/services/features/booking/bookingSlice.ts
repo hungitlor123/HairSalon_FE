@@ -1,5 +1,6 @@
 import { IBooking, IBookingRequest } from "@/interfaces/Booking";
-import { CUSTOMER_BOOKING_ENDPOINT, GET_BOOKING_ENDPOINT } from "@/services/constant/apiConfig";
+import { ICustomerBooking } from "@/interfaces/CustomerBooking";
+import {  CUSTOMER_BOOKING_ENDPOINT, GET_BOOKING_CUSTOMER_ENDPOINT, GET_BOOKING_ENDPOINT, VERIFY_BOOKING_ENDPOINT } from "@/services/constant/apiConfig";
 import axiosInstance from "@/services/constant/axiosInstance";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -8,28 +9,35 @@ type BookingState = {
     loading: boolean;
     bookings: IBooking[] | null;
     booking: IBooking | null;
+    customerBooking: ICustomerBooking[] | null;
     error: string[] | unknown;
 }
 
 const initialState: BookingState = {
     loading: false,
+    customerBooking: null,
     bookings: null,
     booking: null,
     error: null,
 }
 
 
-export const getAllBooking = createAsyncThunk<IBooking[], void>(
+export const getAllBooking = createAsyncThunk<IBooking[], { date: string }>(
     "bookings/getAllBooking",
-    async (_, thunkAPI) => {
+    async ({ date }, thunkAPI) => {
         try {
             const token = sessionStorage.getItem('hairSalonToken');
             const response = await axiosInstance.get(GET_BOOKING_ENDPOINT, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
+                params: {
+                    date: date,  // Passing the date as a query parameter
+                },
             });
-            return response.data;
+
+            // Extract the bookings array from response.data
+            return response.data.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
         }
@@ -81,6 +89,64 @@ export const customerCreateBooking = createAsyncThunk<IBooking, IBookingRequest,
     }
 );
 
+export const getCustomerBooking = createAsyncThunk<ICustomerBooking[], { customerId: number }>(
+    "customerBookings/getCustomerBooking",
+    async (data, thunkAPI) => {
+        try {
+            const token = sessionStorage.getItem('hairSalonToken');
+            const response = await axiosInstance.get(
+                `${GET_BOOKING_CUSTOMER_ENDPOINT}?customerId=${data.customerId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            return response.data.data;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
+        }
+    }
+);
+
+export const verifyBooking = createAsyncThunk<
+    IBooking,
+    { token: string; paymentId: string; payerId: string; stylistId: string },
+    { rejectValue: { errCode: number; errMsg: string } }
+>(
+    "bookings/verifyBooking",
+    async (data, thunkAPI) => {
+        try {
+            const params = new URLSearchParams();
+            params.append("token", data.token);
+            params.append("paymentId", data.paymentId);
+            params.append("payerId", data.payerId);
+            params.append("stylistId", data.stylistId);
+
+            const response = await axiosInstance.post(VERIFY_BOOKING_ENDPOINT, params, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            });
+
+            return response.data;
+        } catch (error: any) {
+            if (error.response && error.response.data) {
+                return thunkAPI.rejectWithValue({
+                    errCode: error.response.data.errCode || 1,
+                    errMsg: error.response.data.errMsg || 'Unknown error occurred',
+                });
+            } else {
+                return thunkAPI.rejectWithValue({
+                    errCode: 1,
+                    errMsg: 'Unknown error occurred',
+                });
+            }
+        }
+    }
+);
+
+
 
 export const bookingSlice = createSlice({
     name: "bookings",
@@ -111,6 +177,30 @@ export const bookingSlice = createSlice({
             state.booking = action.payload;
         });
         builder.addCase(customerCreateBooking.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error.message;
+        });
+        //verifyBooking
+        builder.addCase(verifyBooking.pending, (state) => {
+            state.loading = true;
+        });
+        builder.addCase(verifyBooking.fulfilled, (state, action) => {
+            state.loading = false;
+            state.booking = action.payload;
+        });
+        builder.addCase(verifyBooking.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error.message;
+        });
+        // Customer Booking Service
+        builder.addCase(getCustomerBooking.pending, (state) => {
+            state.loading = true;
+        });
+        builder.addCase(getCustomerBooking.fulfilled, (state, action) => {
+            state.loading = false;
+            state.customerBooking = action.payload;
+        });
+        builder.addCase(getCustomerBooking.rejected, (state, action) => {
             state.loading = false;
             state.error = action.error.message;
         });
