@@ -14,7 +14,7 @@ import { deleteService, getAllService } from "@/services/features/service/servic
 import UpdateServicePopup from "../popup/UpdateService/UpdateService";
 import { IService } from "@/interfaces/Service";
 import CreateServicePopup from "../popup/CreateService/CreateServicePopup";
-import PopupConfirmAction from "../popup/ConfirmDelete/ConfirmDelete";
+import PopupConfirmAction from "../popup/ConfirmDelete/PopupConfirmAction";
 
 const TableService = () => {
     const dispatch = useAppDispatch();
