@@ -84,7 +84,6 @@ const TableStaff = () => {
                                         <TableCell>{booking.customerData.firstName}</TableCell>
                                         <TableCell>{booking.timeTypeDataBooking.valueEn}</TableCell>
                                         <TableCell>
-                                            // Hiển thị trạng thái booking
                                             {booking.statusId === 'S1' && 'Pending'}
                                             {booking.statusId === 'S2' && 'Confirm'}
                                             {booking.statusId === 'S3' && 'Success'}
