@@ -96,7 +96,7 @@ const TableStylist = () => {
                                     formatAnyDate(stylist.salaryData?.PaidOn)
                                 ) : (
                                     <button
-                                        onClick={() => handlePaidOnClick(stylist.id)}
+                                        onClick={() => handlePaidOnClick(stylist.salaryData.SalaryId)}
                                         className="border border-slate-600 p-2 rounded-lg text-white bg-slate-800 font-bold"
                                     >
                                         Pay
@@ -114,10 +114,10 @@ const TableStylist = () => {
 
             {/* Popup xác nhận xóa */}
             <PopupConfirmAction
-                title={"Xác nhận chuyển khoản lương cho nhân viên"}
-                content={"Bạn có chắc chắn muốn chuyển khoản lương cho nhân viên này không?"}
-                actionDelete={"Chuyển khoản"}
-                actionCancel={"Hủy"}
+                title={"Confirm salary transfer for employee"}
+                content={"Are you sure you want to transfer the salary for this employee?"}
+                actionDelete={"Transfer"}
+                actionCancel={"Cancel"}
                 isOpen={isPopupConfirmOpen}
                 onClose={closeConfirmPopup}
                 onConfirm={handleConfirmPaidOn}
