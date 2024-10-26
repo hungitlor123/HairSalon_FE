@@ -87,9 +87,9 @@ export const paidSalary = createAsyncThunk<Object, { id: number }>(
                 },
             });
             if (response.data.errCode === 0) {
-                toast.success(`${response.data.errMsg}`);
+                toast.success(`${response.data.errMessage}`);
             } else {
-                toast.error(`${response.data.errMsg}`);
+                toast.error(`${response.data.errMessage}`);
             }
             return response.data;
         } catch (error: any) {
