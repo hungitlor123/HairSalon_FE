@@ -19,6 +19,8 @@ export const GET_STYLIST_ENDPOINT = `${BASE_URL}/get-all-stylist`;
 export const GET_STYLIST_BY_ID_ENDPOINT = `${BASE_URL}/get-detail-stylist-by-id`;
 export const PAID_SALARY_ENDPOINT = `${BASE_URL}/update-paid-on-salaries`;
 
+
+
 //service
 
 export const GET_SERVICE_ENDPOINT = `${BASE_URL}/get-all-services`;
