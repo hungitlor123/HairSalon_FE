@@ -12,15 +12,18 @@ import { useAppDispatch, useAppSelector } from "@/services/store/store";
 import { formatAnyDate } from "@/utils";
 import { IStylist } from "@/interfaces/Stylist";
 import CreateStylistPopup from "../popup/CreateStylist/CreateStylistPopup";
-import { getAllStylist } from "@/services/features/stylist/stylistSlice";
+import { getAllStylist, paidSalary } from "@/services/features/stylist/stylistSlice";
 import useFormatCurrency from "@/utils/useFortmatCurrency";
+import PopupConfirmAction from "../popup/ConfirmDelete/PopupConfirmAction";
 
 const TableStylist = () => {
     const dispatch = useAppDispatch();
     const formatCurrency = useFormatCurrency();
+    const [isPopupConfirmOpen, setIsPopupConfirmOpen] = useState(false);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [stylistIdToPaidOn, setServiceIdToPaidOn] = useState<number | null>(null);
 
     const { stylists } = useAppSelector(state => state.stylists); // Lấy dữ liệu stylist từ store
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
 
     const openPopup = () => {
         setIsPopupOpen(true);
@@ -32,6 +35,23 @@ const TableStylist = () => {
     useEffect(() => {
         dispatch(getAllStylist());
     }, [dispatch]);
+
+    // handlePaidOnClick: Hàm xử lý khi nhấn vào nút "Pay" để chuyển khoản lương cho nhân viên
+    const handlePaidOnClick = (id: number) => {
+        setServiceIdToPaidOn(id);
+        setIsPopupConfirmOpen(true);
+    };
+    const closeConfirmPopup = () => {
+        setIsPopupConfirmOpen(false);
+        setServiceIdToPaidOn(null);
+    };
+    const handleConfirmPaidOn = async () => {
+        if (stylistIdToPaidOn !== null) {
+            await dispatch(paidSalary({ id: stylistIdToPaidOn }));
+            dispatch(getAllStylist());
+            closeConfirmPopup();
+        }
+    };
 
     return (
         <>
@@ -75,7 +95,12 @@ const TableStylist = () => {
                                 {stylist.salaryData?.PaidOn ? (
                                     formatAnyDate(stylist.salaryData?.PaidOn)
                                 ) : (
-                                    <button className="border border-slate-600 p-2 rounded-lg text-white bg-slate-800 font-bold">Pay</button>
+                                    <button
+                                        onClick={() => handlePaidOnClick(stylist.id)}
+                                        className="border border-slate-600 p-2 rounded-lg text-white bg-slate-800 font-bold"
+                                    >
+                                        Pay
+                                    </button>
                                 )}
 
                             </TableCell>
@@ -86,6 +111,17 @@ const TableStylist = () => {
 
             {/* Popup component */}
             <CreateStylistPopup isOpen={isPopupOpen} onClose={closePopup} />
+
+            {/* Popup xác nhận xóa */}
+            <PopupConfirmAction
+                title={"Xác nhận chuyển khoản lương cho nhân viên"}
+                content={"Bạn có chắc chắn muốn chuyển khoản lương cho nhân viên này không?"}
+                actionDelete={"Chuyển khoản"}
+                actionCancel={"Hủy"}
+                isOpen={isPopupConfirmOpen}
+                onClose={closeConfirmPopup}
+                onConfirm={handleConfirmPaidOn}
+            />
         </>
     );
 };
