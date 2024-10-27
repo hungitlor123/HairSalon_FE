@@ -77,6 +77,7 @@ const TableStylist = () => {
                         <TableHead className="text-right">Base Salary</TableHead>
                         <TableHead className="text-right">Bonuses</TableHead>
                         <TableHead className="text-right">Total Salary</TableHead>
+                        <TableHead className="text-right">New Salary</TableHead>
                         <TableHead className="text-right">Paid On</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -91,6 +92,13 @@ const TableStylist = () => {
                             <TableCell className="text-right">{formatCurrency(stylist.salaryData?.BaseSalary)}</TableCell>
                             <TableCell className="text-right">{formatCurrency(stylist.salaryData?.Bonuses)}</TableCell>
                             <TableCell className="text-right">{formatCurrency(stylist.salaryData?.TotalSalary)}</TableCell>
+                            <TableCell className="text-right">
+                                {stylist && stylist.salaryData?.PaidOn && (
+                                    <button className="border border-green-600 p-2 rounded-lg text-white bg-green-500 font-bold">
+                                        Create Salary
+                                    </button>)}
+                            </TableCell>
+
                             <TableCell className="text-right">
                                 {stylist.salaryData?.PaidOn ? (
                                     formatAnyDate(stylist.salaryData?.PaidOn)
