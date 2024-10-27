@@ -86,10 +86,10 @@ export const createSalaryForStylist = createAsyncThunk<Object, ICreateSalary>(
                     Authorization: `Bearer ${token}`,
                 },
             });
-            if (response.data.errCode === 0) {
-                toast.success(`${response.data.errMessage}`);
-            } else {
-                toast.error(`${response.data.errMessage}`);
+            if (response.data.message) {
+                toast.error(`${response.data.message}`);
+            } else if (!response.data.message) {
+                toast.success("Create Salary Successfully");
             }
             return response.data;
         } catch (error: any) {
