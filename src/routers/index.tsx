@@ -58,6 +58,7 @@ const AppRouter = () => {
                 </>
             ) : (
                 <>
+                    <Route path='/' element={<Home />} />
                     <Route path='/profile' element={<Profile />} />
                     <Route path='/booking' element={<BookingPage />} />
                     <Route path='/about' element={<AboutPage />} />
@@ -65,6 +66,8 @@ const AppRouter = () => {
                     <Route path='/contact' element={<ContactPage />} />
                     <Route path='/about' element={<AboutPage />} />
                     <Route path='/services/:id' element={<ServiceDetailPage />} />
+
+
 
                     {isCustomer && (
                         <>
@@ -75,6 +78,7 @@ const AppRouter = () => {
                             <Route path='/about' element={<AboutPage />} />
                             <Route path='/services' element={<ServicePage />} />
                             <Route path='/contact' element={<ContactPage />} />
+                            <Route path='/services' element={<ServicePage />} />
                             <Route path='/order-history' element={<ViewBookingPage />} />
                         </>
                     )}
