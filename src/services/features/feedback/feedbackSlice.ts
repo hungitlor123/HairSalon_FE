@@ -23,12 +23,12 @@ export const viewFeedbackOfService = createAsyncThunk<IFeedback[], { serviceId: 
         const { serviceId } = data;
         try {
             const token = localStorage.getItem('hairSalonToken');
-            const response = await axiosInstance.get(`${GET_FEEDBACK_SERVICE_ENDPOINT}/${serviceId}`, {
+            const response = await axiosInstance.get(`${GET_FEEDBACK_SERVICE_ENDPOINT}?serviceId=${serviceId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            return response.data;
+            return response.data.feedback;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
         }
