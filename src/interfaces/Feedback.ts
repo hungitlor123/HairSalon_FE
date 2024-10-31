@@ -5,7 +5,6 @@ export interface ICreateFeedback {
     rating: number;
     serviceId: number;
 }
-
 export interface IFeedback {
     id: number;
     rating: number;
