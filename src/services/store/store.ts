@@ -8,24 +8,35 @@ import stylistSlice from '../features/stylist/stylistSlice';
 import serviceSlice from '../features/service/serviceSlice';
 import timeBookingSlice from '../features/timeBooking/timeBookingSlice';
 import bookingSlice from '../features/booking/bookingSlice';
-import dashboardSlice  from '../features/dashboard/dashboardSlice';
+import dashboardSlice from '../features/dashboard/dashboardSlice';
+import feedbackSlice from '../features/feedback/feedbackSlice';
 
 const presistConfig = {
     key: 'root',
     storage,
-    whitelist: ['auth', 'users', 'stylists', 'services', 'times', 'bookings', 'dashboards'],
+    whitelist: [
+        'auth',
+        'users',
+        'stylists',
+        'services',
+        'times',
+        'bookings',
+        'dashboards',
+        'feedbacks',
+    ],
 }
 
 // Create a hook for using TypedUseSelectorHook
 const rootReducer = combineReducers({
     // Add your reducers here
-    auth : authSlice,
+    auth: authSlice,
     users: userSlice,
     stylists: stylistSlice,
     services: serviceSlice,
     times: timeBookingSlice,
     bookings: bookingSlice,
     dashboards: dashboardSlice,
+    feedbacks: feedbackSlice,
 });
 
 const persistedReducer = persistReducer(presistConfig, rootReducer);
