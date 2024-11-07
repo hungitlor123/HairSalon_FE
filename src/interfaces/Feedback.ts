@@ -5,7 +5,6 @@ export interface ICreateFeedback {
     rating: number;
     serviceId: number;
 }
-
 export interface IFeedback {
     id: number;
     rating: number;
@@ -15,6 +14,6 @@ export interface IFeedback {
     serviceId: number;
     createdAt: string;
     updatedAt: string;
-    userFirstName: string;
-    userLastName: string;
+    firstName: string;
+    lastName: string;
 }

@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header/Header";
 import Footer from "@/components/layout/Footer/Footer";
 import { getServiceById } from "@/services/features/service/serviceSlice";
 import { ClipLoader } from "react-spinners";  // Import react-spinners to display loading
-import ViewFeedBack from "./feedback/ViewFeedBack";
+import ViewFeedBack from "../booking/feedback/ViewFeedBack";
 
 const ServiceDetailPage = () => {
     const { id } = useParams();  // Get id from URL

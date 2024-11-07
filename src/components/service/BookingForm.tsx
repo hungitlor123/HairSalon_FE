@@ -89,20 +89,26 @@ const BookingForm = () => {
                     const currentDate = new Date();
                     const selectedDate = new Date(date);
 
+                    let sortedTimes = times.map((time) => {
+                        const [hours, minutes] = time.timeTypeData.valueVi.split(":").map(Number);
+                        return {
+                            ...time,
+                            timeInMinutes: hours * 60 + minutes,
+                        };
+                    });
+
                     if (selectedDate.toDateString() === currentDate.toDateString()) {
                         const currentTime = currentDate.getHours() * 60 + currentDate.getMinutes();
-                        const filteredTimes = times.map((time) => {
-                            const [hours, minutes] = time.timeTypeData.valueVi.split(":").map(Number);
-                            const timeInMinutes = hours * 60 + minutes;
-                            return {
-                                ...time,
-                                isPast: timeInMinutes <= currentTime,
-                            };
-                        });
-                        setAvailableTimes(filteredTimes);
-                    } else {
-                        setAvailableTimes(times.map((time) => ({ ...time, isPast: false })));
+                        sortedTimes = sortedTimes.map((time) => ({
+                            ...time,
+                            isPast: time.timeInMinutes <= currentTime,
+                        }));
                     }
+
+                    // Sort times in ascending order based on timeInMinutes
+                    sortedTimes.sort((a, b) => a.timeInMinutes - b.timeInMinutes);
+
+                    setAvailableTimes(sortedTimes);
                 })
                 .catch((error) => {
                     console.error("Error fetching available times:", error);
@@ -110,7 +116,6 @@ const BookingForm = () => {
                 });
         }
     }, [stylistId, date, dispatch]);
-
     const calculateTotalAmount = (selectedServices: { id: string, price: number }[]) => {
         const amount = selectedServices.reduce((acc, service) => acc + service.price, 0);
         setTotalAmount(amount);
@@ -344,14 +349,17 @@ const BookingForm = () => {
                             <button
                                 key={index}
                                 type="button"
-                                className={`p-3 rounded border ${timeType.isPast ? "bg-gray-300 text-gray-500 cursor-not-allowed" : watch("timeType") === timeType.timeType
-                                    ? "bg-yellow-500 text-black"
-                                    : "bg-white text-black"
+                                className={`p-3 rounded border ${timeType.isPast || timeType.statusTime === "disable"
+                                    ? "bg-gray-400 text-gray-500 cursor-not-allowed"
+                                    : watch("timeType") === timeType.timeType
+                                        ? "bg-yellow-500 text-black"
+                                        : "bg-white text-black"
                                     } focus:outline-none hover:bg-yellow-400`}
-                                onClick={() => !timeType.isPast && setValue("timeType", timeType.timeType)}
-                                disabled={timeType.isPast}
+                                onClick={() => !timeType.isPast && timeType.statusTime !== "disable" && setValue("timeType", timeType.timeType)}
+                                disabled={timeType.isPast || timeType.statusTime === "disable"}
                             >
                                 {timeType.timeTypeData.valueVi}
+                                {timeType.statusTime === "disable"}
                             </button>
                         ))
                     ) : (
